@@ -1,0 +1,31 @@
+.BoxSelecionarPais {
+    background-color: #151517;
+    align-items: center;
+    gap: 30px;
+    width: 500px;
+    justify-content: space-between;
+    padding: 0 10px;
+    transition: all .3s ease;
+    text-transform: uppercase;
+}
+
+.BoxSelecionarPais img {
+    object-fit: contain;
+}
+
+.BoxSelecionarPais:hover {
+    color: #000;
+    background-color: #dddddd;
+}
+
+.BoxSelecionarPais:hover svg {
+    color: #000;
+}
+
+.iconNextPrevious {
+    color: #fff !important; 
+}
+
+.iconNextPrevious > svg {
+    font-size: 3rem
+}

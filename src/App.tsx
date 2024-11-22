@@ -1,16 +1,19 @@
-import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
+import { SelecaoTime } from './pages/SelecaoTime/SelecaoTime';
+import { Jogadores } from './pages/Jogadores/Jogadores';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Futebol
-        </p>
-      </header>
+      <BrowserRouter>
+        <Routes>
+          <Route Component={SelecaoTime} path='' />
+          <Route Component={Jogadores} path='/jogadores' />
+        </Routes>
+      </BrowserRouter>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
