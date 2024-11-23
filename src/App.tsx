@@ -1,17 +1,21 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
-import { SelecaoTime } from './pages/SelecaoTime/SelecaoTime';
+import { Times } from './pages/SelecaoTime/Times';
 import { Jogadores } from './pages/Jogadores/Jogadores';
+import { ThemeProvider } from '@emotion/react';
+import theme from './theme/theme';
 
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route Component={SelecaoTime} path='' />
-          <Route Component={Jogadores} path='/jogadores' />
-        </Routes>
-      </BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route Component={Times} path='' />
+            <Route Component={Jogadores} path='/times/:id' />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </div>
   )
 }
