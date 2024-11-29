@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react"
 import api from "../../services/api"
 import { useNavigate, useParams } from "react-router-dom"
-import { Box, Button, Chip, Grid2, TableCell, TableRow } from "@mui/material"
-import { Overall } from "./Components/Overall"
+import { Box, Button, Grid2 } from "@mui/material"
 import { useTable } from "../../hooks/useTable"
 import { TablePaginated } from "../../components/TablePaginated"
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
-import { IconTooltip } from "../../components/IconTooltip"
+import { useSnackbar } from 'notistack'
+import { LinhaJogador } from "./Components/LinhaJogador"
+import { ModalAddJogador } from "./Components/Modal/ModalAddJogador"
 
 export function Jogadores() {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { enqueueSnackbar } = useSnackbar()
+
     const [time, setTime] = useState(null)
+    const [paises, setPaises] = useState([])
+    const [recarregar, setRecarregar] = useState(false)
 
     const headers = [
         { nome: 'Nome', width: '40%' },
@@ -22,8 +25,22 @@ export function Jogadores() {
     ]
     const table = useTable(headers, time?.jogadores ?? [])
 
+    const handleRecarregar = () => setRecarregar(!recarregar)
+
     const handleNavigateToSelecaoTime = () => {
         navigate('/')
+    }
+
+    const handleDeleteJogador = (idJogador) => {
+        api
+            .delete(`/jogadores/${idJogador}`)
+            .then(() => {
+                enqueueSnackbar('Jogador deletado com sucesso.', { variant: 'success' });
+                setRecarregar(!recarregar)
+            })
+            .catch(() => {
+                enqueueSnackbar('Não foi possível deletar o jogador.', { variant: 'error' });
+            })
     }
 
     useEffect(() => {
@@ -34,7 +51,15 @@ export function Jogadores() {
             .then((response) => {
                 setTime(response?.data ?? [])
             })
-    }, [id])
+    }, [id, recarregar])
+
+    useEffect(() => {
+        api
+            .get('/paises')
+            .then((response) => {
+                setPaises(response?.data ?? [])
+            })
+    }, [])
 
     return (
         <Grid2
@@ -43,7 +68,7 @@ export function Jogadores() {
             container
             width="100%"
         >
-            <Grid2 size={4}>
+            <Grid2 size={{ md: 4, xs: 12 }}>
                 <Box sx={{ fontWeight: 600, fontSize: '2rem' }} mb={3}>
                     {time?.nome}
                 </Box>
@@ -56,44 +81,32 @@ export function Jogadores() {
                     />
                 </Box>
 
-                <Button onClick={handleNavigateToSelecaoTime}>
+                <Button onClick={handleNavigateToSelecaoTime} variant="contained">
                     Voltar
                 </Button>
             </Grid2>
 
             <Grid2
-                size={8}
+                size={{ md: 8, xs: 12 }}
                 p={5}
             >
+                <Box textAlign="end">
+                    <ModalAddJogador
+                        idTime={time?.id}
+                        handleRecarregar={handleRecarregar}
+                        paises={paises}
+                    />
+                </Box>
+
                 <TablePaginated table={table}>
                     {table?.paginatedRows?.map((item) => (
-                        <TableRow key={item?.id}>
-                            <TableCell>
-                                {item?.nome}
-                            </TableCell>
-
-                            <TableCell>
-                                <Chip label={item.posicao} sx={{ height: '25px' }}/>
-                            </TableCell>
-
-                            <TableCell>
-                                <Overall value={item?.overall} />
-                            </TableCell>
-
-                            <TableCell>
-                                <IconTooltip
-                                    callback={() => console.log('Editar')}
-                                    icon={<EditOutlinedIcon />}
-                                    tooltip="Editar"
-                                />
-
-                                <IconTooltip
-                                    callback={() => console.log('Excluir')}
-                                    icon={<DeleteOutlinedIcon />}
-                                    tooltip="Excluir"
-                                />
-                            </TableCell>
-                        </TableRow>
+                        <LinhaJogador
+                            key={item?.id}
+                            item={item}
+                            handleDeleteJogador={handleDeleteJogador}
+                            handleRecarregar={handleRecarregar}
+                            paises={paises}
+                        />
                     ))}
                 </TablePaginated>
             </Grid2>
